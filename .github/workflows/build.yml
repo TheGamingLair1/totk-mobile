@@ -19,17 +19,11 @@ jobs:
         env:
           ZELDA_IOS_TEAM: "1234567890"
         run: |
-          # 1. Generate the Python virtual environment
-          mkdir -p work
+          # 1. Setup the standard empty layout folders
+          mkdir -p work/exefs work/romfs
           python3 -m venv work/venv
           
-          # 2. FIXED: Generate a complete set of mock Switch system binary structures to bypass the scans
-          mkdir -p work/exefs work/romfs
-          for file in main subsdk0 subsdk1 subsdk2 sdk main.npdm; do
-            echo "dummy_data" > "work/exefs/$file"
-          done
-          
-          # 3. Grant script permissions and kick off the compilation pipeline
+          # 2. Kick off the compilation pipeline
           chmod +x script/*.sh
           ./script/ios.sh || bash script/ios.sh
 
