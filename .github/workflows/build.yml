@@ -1,0 +1,29 @@
+name: Build TOTK iOS App
+
+on:
+  workflow_dispatch: 
+
+jobs:
+  build-ios:
+    runs-on: macos-latest
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v6
+
+      - name: Install System Dependencies
+        run: |
+          brew install cmake pkg-config opus libvpx python@3.14
+
+      - name: Run Build and Compile App Shell
+        run: |
+          mkdir -p work
+          # Compiles purely the code structure into an iOS app package
+          cmake -B build -G Xcode -DCMAKE_SYSTEM_NAME=iOS
+          cmake --build build --config Release
+
+      - name: Upload Finished App to Windows
+        uses: actions/upload-artifact@v7
+        with:
+          name: totk-ios-app
+          path: build/Release-iphoneos/*.ipa
