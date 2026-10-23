@@ -14,12 +14,12 @@ jobs:
       - name: Install System Dependencies
         run: |
           brew install cmake pkg-config opus libvpx python@3.14
-
+          
       - name: Run Build and Compile App Shell
         run: |
           mkdir -p work
-          # Compiles purely the code structure into an iOS app package
-          cmake -B build -G Xcode -DCMAKE_SYSTEM_NAME=iOS
+          # Added "." to force CMake to search the workspace root and find the correct build paths automatically
+          cmake . -B build -G Xcode -DCMAKE_SYSTEM_NAME=iOS
           cmake --build build --config Release
 
       - name: Upload Finished App to Windows
