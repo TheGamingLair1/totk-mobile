@@ -9,21 +9,22 @@ jobs:
     
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4.2.2
 
       - name: Install System Dependencies
         run: |
           brew install cmake pkg-config opus libvpx python@3.14
-          
-      - name: Run Build and Compile App Shell
+
+      - name: Run Native Project Build Script
         run: |
-          mkdir -p work
-          # Added "." to force CMake to search the workspace root and find the correct build paths automatically
-          cmake . -B build -G Xcode -DCMAKE_SYSTEM_NAME=iOS
-          cmake --build build --config Release
+          # 1. Grants execution permission to the project's internal build scripts
+          chmod +x script/*.sh
+          
+          # 2. Runs the developer's exact automated build rules for iOS
+          ./script/ios.sh || bash script/ios.sh
 
       - name: Upload Finished App to Windows
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4.6.0
         with:
           name: totk-ios-app
-          path: build/Release-iphoneos/*.ipa
+          path: build/Release-iphoneos/*.ipa || *.ipa || ios/build/**/*.ipa
