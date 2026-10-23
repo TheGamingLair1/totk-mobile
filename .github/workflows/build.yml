@@ -13,13 +13,17 @@ jobs:
 
       - name: Install System Dependencies
         run: |
-          brew install cmake pkg-config opus libvpx python@3.14
+          brew install cmake pkg-config opus libvpx python@3.12
 
       - name: Run Native Project Build Script
         env:
-          # This fake code satisfies line 11 of the script so it won't crash!
           ZELDA_IOS_TEAM: "1234567890"
         run: |
+          # 1. Manually create the missing work/venv/ directory structure the code expects
+          mkdir -p work
+          python3 -m venv work/venv
+          
+          # 2. Grant script permissions and kick off the compilation pipeline
           chmod +x script/*.sh
           ./script/ios.sh || bash script/ios.sh
 
@@ -27,4 +31,8 @@ jobs:
         uses: actions/upload-artifact@v6
         with:
           name: totk-ios-app
-          path: build/Release-iphoneos/*.ipa || *.ipa || ios/build/**/*.ipa || **/build/**/*.ipa
+          path: |
+            build/Release-iphoneos/*.ipa
+            *.ipa
+            ios/build/**/*.ipa
+            **/build/**/*.ipa
