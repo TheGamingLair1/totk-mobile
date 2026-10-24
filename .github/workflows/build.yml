@@ -1,4 +1,4 @@
-nname: Build TOTK iOS App
+name: Build TOTK iOS App
 
 on:
   workflow_dispatch: 
