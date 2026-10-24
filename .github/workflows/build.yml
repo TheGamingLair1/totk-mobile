@@ -9,26 +9,23 @@ jobs:
     
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v7
 
       - name: Install System Dependencies
         run: |
           brew install cmake pkg-config opus libvpx python@3.12
 
-      - name: Run Native Project Build Script
-        env:
-          ZELDA_IOS_TEAM: "1234567890"
+      - name: Compile iOS Mobile Target Directly
         run: |
-          # 1. Setup the standard empty layout folders
-          mkdir -p work/exefs work/romfs
-          python3 -m venv work/venv
+          mkdir -p build work
+          # 1. Configures the core engine files recursively for the iOS environment layout
+          cmake -B build -G Xcode -DCMAKE_SYSTEM_NAME=iOS -DCMAKE_OSX_SYSROOT=iphoneos
           
-          # 2. Kick off the compilation pipeline
-          chmod +x script/*.sh
-          ./script/ios.sh || bash script/ios.sh
+          # 2. Compiles ONLY the binary app code into a standalone release package
+          cmake --build build --config Release --target totk-mobile-ios || cmake --build build --config Release
 
       - name: Upload Finished App to Windows
-        uses: actions/upload-artifact@v4.6.0
+        uses: actions/upload-artifact@v6
         with:
           name: totk-ios-app
           path: |
@@ -36,3 +33,4 @@ jobs:
             *.ipa
             ios/build/**/*.ipa
             **/build/**/*.ipa
+            build/**/*.ipa
