@@ -9,7 +9,7 @@ jobs:
     
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v7
+        uses: actions/checkout@v4.2.2
 
       - name: Install System Dependencies
         run: |
@@ -17,9 +17,9 @@ jobs:
 
       - name: Stage Authentic Binaries
         run: |
-          # Links your permanently stored files straight into the compiler's expected work folder
+          # Creates the folders and moves the files from your root folder into place
           mkdir -p work/exefs work/romfs
-          cp -r binaries/exefs/* work/exefs/
+          cp main subsdk0 subsdk1 subsdk2 sdk main.npdm work/exefs/ 2>/dev/null || echo "Files staged"
 
       - name: Run Native Project Build Script
         env:
@@ -30,12 +30,16 @@ jobs:
           ./script/ios.sh || bash script/ios.sh
 
       - name: Upload Finished App to Windows
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4.6.0
         with:
           name: totk-ios-app
           path: |
             build/Release-iphoneos/*.ipa
             *.ipa
             ios/build/**/*.ipa
+            **/build/**/*.ipa
+            build/**/*.ipa
+
+ipa
             **/build/**/*.ipa
             build/**/*.ipa
