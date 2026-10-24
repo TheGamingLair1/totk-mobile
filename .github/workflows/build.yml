@@ -1,4 +1,4 @@
-name: Build TOTK iOS App
+nname: Build TOTK iOS App
 
 on:
   workflow_dispatch: 
@@ -9,7 +9,7 @@ jobs:
     
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v7
+        uses: actions/checkout@v4.2.2
 
       - name: Install System Dependencies
         run: |
@@ -18,14 +18,14 @@ jobs:
       - name: Compile iOS Mobile Target Directly
         run: |
           mkdir -p build work
-          # 1. Configures the core engine files recursively for the iOS environment layout
-          cmake -B build -G Xcode -DCMAKE_SYSTEM_NAME=iOS -DCMAKE_OSX_SYSROOT=iphoneos
+          # 1. FIXED: Explicitly targets the "host" folder where the main CMakeLists.txt lives!
+          cmake -S host -B build -G Xcode -DCMAKE_SYSTEM_NAME=iOS -DCMAKE_OSX_SYSROOT=iphoneos
           
-          # 2. Compiles ONLY the binary app code into a standalone release package
-          cmake --build build --config Release --target totk-mobile-ios || cmake --build build --config Release
+          # 2. Compiles the targeted engine app code into a standalone release package
+          cmake --build build --config Release
 
       - name: Upload Finished App to Windows
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4.6.0
         with:
           name: totk-ios-app
           path: |
