@@ -9,7 +9,7 @@ jobs:
     
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v7
 
       - name: Install System Dependencies
         run: |
@@ -42,7 +42,7 @@ jobs:
           ./script/ios.sh || bash script/ios.sh
 
       - name: Upload Finished App to Windows
-        uses: actions/upload-artifact@v4.6.0
+        uses: actions/upload-artifact@v6
         with:
           name: totk-ios-app
           path: |
