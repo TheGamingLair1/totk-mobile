@@ -17,20 +17,12 @@ jobs:
 
       - name: Compile iOS Mobile Target Directly
         run: |
-          mkdir -p build work
-          # 1. FIXED: Explicitly targets the "host" folder where the main CMakeLists.txt lives!
-          cmake -S host -B build -G Xcode -DCMAKE_SYSTEM_NAME=iOS -DCMAKE_OSX_SYSROOT=iphoneos
+          # 1. FIXED: Navigate straight into the native ios directory where CMakeLists.txt lives
+          cd ios
           
-          # 2. Compiles the targeted engine app code into a standalone release package
+          # 2. Initialize the cross-compiler configuration maps
+          mkdir -p build
+          cmake -S . -B build -G Xcode -DCMAKE_SYSTEM_NAME=iOS -DCMAKE_OSX_SYSROOT=iphoneos
+          
+          # 3. Package the app files into a standalone release application bundle
           cmake --build build --config Release
-
-      - name: Upload Finished App to Windows
-        uses: actions/upload-artifact@v4.6.0
-        with:
-          name: totk-ios-app
-          path: |
-            build/Release-iphoneos/*.ipa
-            *.ipa
-            ios/build/**/*.ipa
-            **/build/**/*.ipa
-            build/**/*.ipa
