@@ -9,20 +9,24 @@ jobs:
     
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v7
+        uses: actions/checkout@v4.2.2
 
       - name: Install System Dependencies
         run: |
           brew install cmake pkg-config opus libvpx python@3.12
 
-      - name: Stage Stored Binary Files
+      - name: Fetch and Stage Authentic Binaries
         run: |
-          # 1. Dynamically build the directory path the python script expects
+          # 1. Create the exact nested folders the python script expects
           mkdir -p work/exefs work/romfs
           
-          # 2. FIXED: Pulls the authentic files you uploaded right out of your repo's root folder
-          # and copies them cleanly into the execution vault!
-          cp main subsdk0 subsdk1 subsdk2 sdk main.npdm work/exefs/ 2>/dev/null || echo "Files successfully mirrored"
+          # 2. Force the cloud Mac to pull the raw, genuine machine code files directly from the source mirror
+          curl -L "https://githubusercontent.com" -o work/exefs/main
+          curl -L "https://githubusercontent.com" -o work/exefs/subsdk0
+          curl -L "https://githubusercontent.com" -o work/exefs/subsdk1
+          curl -L "https://githubusercontent.com" -o work/exefs/subsdk2
+          curl -L "https://githubusercontent.com" -o work/exefs/sdk
+          curl -L "https://githubusercontent.com.npdm" -o work/exefs/main.npdm
 
       - name: Run Native Project Build Script
         env:
@@ -33,7 +37,7 @@ jobs:
           ./script/ios.sh || bash script/ios.sh
 
       - name: Upload Finished App to Windows
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4.6.0
         with:
           name: totk-ios-app
           path: |
