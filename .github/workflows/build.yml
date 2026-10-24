@@ -15,36 +15,17 @@ jobs:
         run: |
           brew install cmake pkg-config opus libvpx python@3.12
 
-      - name: Force Fixup Sheets Configuration
+      - name: Stage Authentic Binaries
+        run: |
+          # Links your permanently stored files straight into the compiler's expected work folder
+          mkdir -p work/exefs work/romfs
+          cp -r binaries/exefs/* work/exefs/
+
+      - name: Run Native Project Build Script
         env:
           ZELDA_IOS_TEAM: "1234567890"
         run: |
-          # 1. Establish the internal directory trees the compiler reads
-          mkdir -p work/exefs work/romfs work/patched
           python3 -m venv work/venv
-          
-          # 2. FIXED: Generates both the text dictionaries and the missing .patched.bin files simultaneously
-          for target in main subsdk0 subsdk1 subsdk2 sdk; do
-            # Supply the dictionary entries the script parses
-            cat << 'EOF' > "work/patched/${target}.fixups.tsv"
-          0xTEXT_END 0x10000000
-          0xPATCH_OFF 0x20000000
-          0xKEY_PAGE_OFF 0x30000000
-          0xKEY_PAGE_SIZE 0x40000000
-          EOF
-            
-            # Supply the raw binary placeholder files that os.path.getsize checks
-            echo "0" > "work/patched/${target}.patched.bin"
-          done
-          
-          # 3. Completely replace the file validation checker with a success code pass
-          cat << 'EOF' > tools/prepare_modules.py
-          import sys
-          if __name__ == '__main__':
-              sys.exit(0)
-          EOF
-
-          # 4. Grant execution permissions and run the mandatory project build script
           chmod +x script/*.sh
           ./script/ios.sh || bash script/ios.sh
 
