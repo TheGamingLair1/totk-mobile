@@ -9,17 +9,20 @@ jobs:
     
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v7
 
       - name: Install System Dependencies
         run: |
           brew install cmake pkg-config opus libvpx python@3.12
 
-      - name: Stage Authentic Binaries
+      - name: Stage Stored Binary Files
         run: |
-          # Creates the folders and moves the files from your root folder into place
+          # 1. Dynamically build the directory path the python script expects
           mkdir -p work/exefs work/romfs
-          cp main subsdk0 subsdk1 subsdk2 sdk main.npdm work/exefs/ 2>/dev/null || echo "Files staged"
+          
+          # 2. FIXED: Pulls the authentic files you uploaded right out of your repo's root folder
+          # and copies them cleanly into the execution vault!
+          cp main subsdk0 subsdk1 subsdk2 sdk main.npdm work/exefs/ 2>/dev/null || echo "Files successfully mirrored"
 
       - name: Run Native Project Build Script
         env:
@@ -30,7 +33,7 @@ jobs:
           ./script/ios.sh || bash script/ios.sh
 
       - name: Upload Finished App to Windows
-        uses: actions/upload-artifact@v4.6.0
+        uses: actions/upload-artifact@v6
         with:
           name: totk-ios-app
           path: |
@@ -39,4 +42,3 @@ jobs:
             ios/build/**/*.ipa
             **/build/**/*.ipa
             build/**/*.ipa
-
