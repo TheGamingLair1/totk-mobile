@@ -10,7 +10,7 @@ jobs:
     runs-on: macos-latest
     steps:
       - name: Checkout Repository Source Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set up Native Cloud Extraction Tools
         run: |
@@ -18,7 +18,7 @@ jobs:
           mkdir -p work/exefs work/patched work/ios/build
 
       - name: Securely Fetch iOS Metadata Asset Layouts
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: exefs-layouts/totk-v143-maps
           path: temp_layouts
