@@ -7,23 +7,26 @@ on:
 
 jobs:
   cloud_build_and_extract:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository Source Code
         uses: actions/checkout@v4
 
       - name: Set up Native Cloud Extraction Tools
         run: |
-          sudo apt-get update && sudo apt-get install -y p7zip-full zstd curl unzip
+          sudo apt-get update && sudo apt-get install -y p7zip-full zstd
           mkdir -p work/exefs work/patched work/ios/build
 
-      - name: Clone and Mirror iOS Metadata Asset Layouts
+      - name: Securely Fetch iOS Metadata Asset Layouts
+        uses: actions/checkout@v4
+        with:
+          repository: exefs-layouts/totk-v143-maps
+          path: temp_layouts
+
+      - name: Mirror Configurations into Build Tree
         run: |
-          curl -L https://github.com -o maps.zip
-          unzip -q maps.zip
-          mv totk-v143-maps-main temp_layouts
           cp -r temp_layouts/patched/* work/patched/
-          rm -rf temp_layouts maps.zip
+          rm -rf temp_layouts
 
       - name: Generate Clean Application Execution Shell
         run: |
